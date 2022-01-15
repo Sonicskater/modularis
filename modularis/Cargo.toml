@@ -7,7 +7,9 @@ edition = "2021"
 
 [dependencies]
 wasmer = {version = "2.1", default-features = false, optional = true}
-
+bincode = {version = "1.3.3", default-features = false, optional = true}
+bytemuck = {version = "1.7.2", default-features = false, optional = true}
 [features]
-wasmer-backend = ["wasmer"]
-cstruct = []
+cstruct-ffi = []
+bincode-ffi = ["bincode", "cstruct-ffi"]
+bytemuck-ffi = ["bytemuck", "cstruct-ffi"]

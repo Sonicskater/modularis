@@ -1,6 +1,6 @@
 
 
-#[cfg(all(feature = "wasmer-backend",feature = "cstruct"))]
+#[cfg(all(feature = "wasmer",feature = "cstruct-ffi"))]
 pub fn write_bytes_to_wasm_memory(bytes: &[u8], memory: &Memory, ptr: usize, len: usize){
     let mem_array: &mut [u8];
     unsafe {
@@ -11,4 +11,17 @@ pub fn write_bytes_to_wasm_memory(bytes: &[u8], memory: &Memory, ptr: usize, len
             mem_array[ptr + i as usize] = bytes[i as usize];
         }
     }
+}
+
+#[cfg(all(feature = "wasmer",feature = "bincode-ffi"))]
+pub fn write_bincode_to_wasm_memory<T : serde::Serialize>(data: T, memory: &Memory, ptr: usize, len: usize){
+    let serialized_array = bincode::serialize(&data).expect("Failed to serialize type");
+    write_bytes_to_wasm_memory(&*serialized_array, memory, ptr, len)
+}
+
+#[cfg(all(feature = "wasmer",feature = "bytemuck-ffi"))]
+pub fn write_bytemuck_to_wasm_memory<T : bytemuck::Pod >(data: T, memory: &Memory, ptr: usize, len: usize){
+    let bytes = bytemuck::bytes_of(&data);
+    //println!("Writing {} bytes using Bytemuck",bytes.len());
+    write_bytes_to_wasm_memory(bytes, memory, ptr, len)
 }
